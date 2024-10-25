@@ -9,19 +9,15 @@
 #include "esp_chip_info.h"
 #include "esp_flash.h"
 #include "esp_system.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "driver/gpio.h"
 
 /* Parts */
 #include "encoder.h"
 #include "dac.h"
 #include "i2c.h"
+#include "analog_sws.h"
 
 #define HEARTBEAT_PIN GPIO_NUM_2
-#define ANALOG_SW1_ENABLE GPIO_NUM_1
-#define ANALOG_SW4_ENABLE GPIO_NUM_19
-#define DUT_ENABLE GPIO_NUM_18
 
 void setup(void);
 void print_esp_info();
@@ -34,6 +30,7 @@ void app_main(void)
     esp_log_level_set("*", ESP_LOG_DEBUG); // Set all components to log level VERBOSE
 
     setup();
+    ESP_LOGI("MAIN", "----- Finished Configurations -----");
 
     // Write 10mV to DAC
     ESP_LOGI("MAIN", "Setting DAC voltage to 10mV");
@@ -62,15 +59,6 @@ void setup(){
     /* Set the GPIO as a push/pull output */
     gpio_set_direction(HEARTBEAT_PIN, GPIO_MODE_OUTPUT);
 
-    /* SET Analog switches on*/
-    gpio_set_direction(ANALOG_SW1_ENABLE, GPIO_MODE_OUTPUT);
-    gpio_set_direction(ANALOG_SW4_ENABLE, GPIO_MODE_OUTPUT);
-    gpio_set_direction(DUT_ENABLE, GPIO_MODE_OUTPUT);
-    gpio_set_level(ANALOG_SW1_ENABLE, 0);
-    gpio_set_level(ANALOG_SW4_ENABLE, 0);
-    gpio_set_level(DUT_ENABLE, 0);
-
-    
     // Initialize I2C
     ESP_LOGI("MAIN", "----- Initializing I2C master -----");
     ESP_ERROR_CHECK(i2c_master_init());
@@ -82,6 +70,13 @@ void setup(){
     // Initialize encoder
     ESP_LOGI("MAIN", "----- Initializing encoder -----");
     ESP_ERROR_CHECK(encoder_init());
+
+    // Initialize analog switches
+    ESP_LOGI("MAIN", "----- Initializing analog switches -----");
+    ESP_ERROR_CHECK(analog_sws_setup());
+    ESP_ERROR_CHECK(vdac_enable()); // Enable the DAC output voltage
+    ESP_ERROR_CHECK(mosfet_input_cc_mode()); // Set the input mode to constant current
+    ESP_ERROR_CHECK(relay_dut_enable()); // Enable the DUT
 }
 
 void print_esp_info(){

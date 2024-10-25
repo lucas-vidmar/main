@@ -1,18 +1,3 @@
-#pragma once
-
-#include <stdio.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "driver/gpio.h"
-#include "driver/pulse_cnt.h"
-#include <esp_log.h>
-
-#define ENCODER_SW GPIO_NUM_25
-#define ENCODER_CLK GPIO_NUM_32
-#define ENCODER_DT GPIO_NUM_33
-#define PULSE_FILTER 10000
-#define DEBOUNCE_TIME 100
-
 /**
  * @file encoder.h
  * @brief Header file for encoder functionalities.
@@ -20,6 +5,20 @@
  * This file contains the declarations for initializing the encoder, handling
  * interrupts, and managing encoder state and position.
  */
+#pragma once
+
+#include <stdio.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <driver/gpio.h>
+#include <driver/pulse_cnt.h>
+#include <esp_log.h>
+
+#define ENCODER_SW GPIO_NUM_25
+#define ENCODER_CLK GPIO_NUM_32
+#define ENCODER_DT GPIO_NUM_33
+#define PULSE_FILTER 10000
+#define DEBOUNCE_TIME 100
 
 /**
  * @brief Initializes the encoder.

@@ -5,7 +5,6 @@
  * This file contains the function declarations for initializing the I2C master,
  * adding devices, and performing read and write operations.
  */
-
 #pragma once
 
 #include <driver/i2c_master.h>
