@@ -16,8 +16,8 @@
 #include "dac.h"
 #include "i2c.h"
 #include "analog_sws.h"
-
-#define HEARTBEAT_PIN GPIO_NUM_2
+#include "led.h"
+#include "rtc.h"
 
 void setup(void);
 void print_esp_info();
@@ -48,20 +48,23 @@ void app_main(void)
             printf("Encoder switch state: %d\n", encoder_getSwitchState());
             printf("---------\n"); 
         }
-        vTaskDelay(10 / portTICK_PERIOD_MS);
+        vTaskDelay(10 / portTICK_PERIOD_MS); // feed the watchdog
     }
 }
 
 void setup(){
 
-    // Configure the IOMUX register for pad HEARTBEAT_PIN
-    esp_rom_gpio_pad_select_gpio(HEARTBEAT_PIN);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(HEARTBEAT_PIN, GPIO_MODE_OUTPUT);
-
     // Initialize I2C
     ESP_LOGI("MAIN", "----- Initializing I2C master -----");
     ESP_ERROR_CHECK(i2c_master_init());
+
+    // Initialize RTC
+    ESP_LOGI("MAIN", "----- Initializing RTC -----");
+    rtc_setup();
+
+    // Initialize LED
+    ESP_LOGI("MAIN", "----- Initializing LED -----");
+    led_setup();
 
     // Initialize DAC
     ESP_LOGI("MAIN", "----- Initializing DAC -----");
