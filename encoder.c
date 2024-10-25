@@ -28,8 +28,8 @@ esp_err_t encoder_init()
     /* PCNT setup */
     ESP_LOGI("Encoder", "Install pcnt unit");
     pcnt_unit_config_t unit_config = {
-        .high_limit = 100,
-        .low_limit = -100,
+        .high_limit = 5,
+        .low_limit = -5,
     };
     ESP_ERROR_CHECK(pcnt_new_unit(&unit_config, &pcnt_unit));
 

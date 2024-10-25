@@ -20,6 +20,7 @@
 #define DAC_QmV (Q * 1000)  /*!< Voltage step in mV */
 #define DAC_V_MAX 0.5   /*!< Maximum voltage output in V */
 #define DAC_OUTPUT_VOLTAGE_DIVIDER (DAC_V_MAX / DAC_REF_VOLTAGE)    /*!< Output voltage divider */
+#define DAC_MAX_DIGITAL_VALUE 83
 
  /**
     * @brief Sets up the DAC.

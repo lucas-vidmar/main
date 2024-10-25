@@ -22,6 +22,12 @@ esp_err_t dac_write(uint16_t value)
     uint8_t data[2];
     data[0] = (value >> 8) & 0x0F;
     data[1] = value & 0xFF;
+
+    if (value > DAC_MAX_DIGITAL_VALUE) // Check if value is out of range
+    {
+        ESP_LOGE("DAC", "DAC value out of range");
+        return ESP_FAIL;
+    }
     return i2c_masterWrite(dac_handle, data, 2);
 }
 

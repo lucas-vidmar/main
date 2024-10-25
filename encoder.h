@@ -18,7 +18,7 @@
 #define ENCODER_CLK GPIO_NUM_32
 #define ENCODER_DT GPIO_NUM_33
 #define PULSE_FILTER 10000
-#define DEBOUNCE_TIME 100
+#define DEBOUNCE_TIME 200 // ms
 
 /**
  * @brief Initializes the encoder.

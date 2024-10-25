@@ -33,8 +33,8 @@ void app_main(void)
     ESP_LOGI("MAIN", "----- Finished Configurations -----");
 
     // Write 10mV to DAC
-    ESP_LOGI("MAIN", "Setting DAC voltage to 10mV");
-    ESP_ERROR_CHECK(dac_set_voltage(10));
+    ESP_LOGI("MAIN", "Setting DAC voltage to 0mV");
+    ESP_ERROR_CHECK(dac_set_voltage(0));
 
     while (1)
     {
@@ -44,9 +44,14 @@ void app_main(void)
         {
             last_encoder_position = encoder_getPosition();
             last_encoder_switch_state = encoder_getSwitchState();
-            printf("Encoder position: %d\n", encoder_getPosition());
-            printf("Encoder switch state: %d\n", encoder_getSwitchState());
-            printf("---------\n"); 
+            uint8_t value_in_mV = encoder_getPosition() + 6;
+            printf("DAC value: %d\n", value_in_mV);
+            if (encoder_getSwitchState())
+            {
+                ESP_LOGI("MAIN", "Setting DAC voltage to %d mV", value_in_mV);
+                ESP_ERROR_CHECK(dac_set_voltage(value_in_mV));
+                vTaskDelay(100 / portTICK_PERIOD_MS); // Debounce
+            }
         }
         vTaskDelay(10 / portTICK_PERIOD_MS); // feed the watchdog
     }
