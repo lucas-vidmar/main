@@ -12,21 +12,21 @@ esp_err_t encoder_init()
 
     /* Switch setup */
     // Configure the IOMUX register for pad ENCODER_SW
-    ESP_LOGV("Encoder", "Set direction for ENCODER_SW");
+    ESP_LOGI("Encoder", "Set direction for ENCODER_SW");
     ESP_ERROR_CHECK(gpio_set_direction(ENCODER_SW, GPIO_MODE_INPUT));
 
     // Set the switch as pullup input
-    ESP_LOGV("Encoder", "Set pull mode for ENCODER_SW");
+    ESP_LOGI("Encoder", "Set pull mode for ENCODER_SW");
     ESP_ERROR_CHECK(gpio_set_pull_mode(ENCODER_SW, GPIO_PULLUP_ONLY));
 
     // Configure ENCODER_SW interrupt
-    ESP_LOGV("Encoder", "Configured ENCODER_SW interrupt");
+    ESP_LOGI("Encoder", "Configured ENCODER_SW interrupt");
     ESP_ERROR_CHECK(gpio_install_isr_service(0));
     ESP_ERROR_CHECK(gpio_isr_handler_add(ENCODER_SW, encoder_itr_sw, NULL));
     ESP_ERROR_CHECK(gpio_set_intr_type(ENCODER_SW, GPIO_INTR_NEGEDGE));
 
     /* PCNT setup */
-    ESP_LOGV("Encoder", "Install pcnt unit");
+    ESP_LOGI("Encoder", "Install pcnt unit");
     pcnt_unit_config_t unit_config = {
         .high_limit = 100,
         .low_limit = -100,
@@ -34,14 +34,14 @@ esp_err_t encoder_init()
     ESP_ERROR_CHECK(pcnt_new_unit(&unit_config, &pcnt_unit));
 
     // Set glitch filter
-    ESP_LOGV("Encoder", "Set glitch filter");
+    ESP_LOGI("Encoder", "Set glitch filter");
     pcnt_glitch_filter_config_t filter_config = {
         .max_glitch_ns = PULSE_FILTER,
     };
     ESP_ERROR_CHECK(pcnt_unit_set_glitch_filter(pcnt_unit, &filter_config));
 
     // Configure PCNT channels, A for CLK and B for DT
-    ESP_LOGV("Encoder", "Install pcnt channels");
+    ESP_LOGI("Encoder", "Install pcnt channels");
     pcnt_chan_config_t chan_a_config = {
         .edge_gpio_num = ENCODER_CLK,
         .level_gpio_num = ENCODER_DT,
@@ -54,18 +54,18 @@ esp_err_t encoder_init()
     ESP_ERROR_CHECK(pcnt_new_channel(pcnt_unit, &chan_b_config, &pcnt_chan_b));
 
     // Set level and actions for channels
-    ESP_LOGV("Encoder", "Set edge and level actions for pcnt channels");
+    ESP_LOGI("Encoder", "Set edge and level actions for pcnt channels");
     ESP_ERROR_CHECK(pcnt_channel_set_edge_action(pcnt_chan_a, PCNT_CHANNEL_EDGE_ACTION_DECREASE, PCNT_CHANNEL_EDGE_ACTION_INCREASE));
     ESP_ERROR_CHECK(pcnt_channel_set_level_action(pcnt_chan_a, PCNT_CHANNEL_LEVEL_ACTION_KEEP, PCNT_CHANNEL_LEVEL_ACTION_INVERSE));
     ESP_ERROR_CHECK(pcnt_channel_set_edge_action(pcnt_chan_b, PCNT_CHANNEL_EDGE_ACTION_INCREASE, PCNT_CHANNEL_EDGE_ACTION_DECREASE));
     ESP_ERROR_CHECK(pcnt_channel_set_level_action(pcnt_chan_b, PCNT_CHANNEL_LEVEL_ACTION_KEEP, PCNT_CHANNEL_LEVEL_ACTION_INVERSE));
 
     // Enable the PCNT unit
-    ESP_LOGV("Encoder", "Enable pcnt unit");
+    ESP_LOGI("Encoder", "Enable pcnt unit");
     ESP_ERROR_CHECK(pcnt_unit_enable(pcnt_unit));
-    ESP_LOGV("Encoder", "Clear pcnt unit");
+    ESP_LOGI("Encoder", "Clear pcnt unit");
     ESP_ERROR_CHECK(pcnt_unit_clear_count(pcnt_unit));
-    ESP_LOGV("Encoder", "Start pcnt unit");
+    ESP_LOGI("Encoder", "Start pcnt unit");
     ESP_ERROR_CHECK(pcnt_unit_start(pcnt_unit));
 
     return ESP_OK; // All configurations are successful

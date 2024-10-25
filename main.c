@@ -31,14 +31,9 @@ void app_main(void)
     printf("***************************\n* Electronic Load Project *\n***************************\n");
     print_esp_info();
     printf("***************************\n");
+    esp_log_level_set("*", ESP_LOG_DEBUG); // Set all components to log level VERBOSE
 
     setup();
-
-    /*
-    uint16_t dac_value = 82; // Example value
-    ESP_ERROR_CHECK(mcp4725_write(dac_value));
-    ESP_LOGI("DAC", "DAC value written: %d", dac_value);
-    */
 
     while (1)
     {
@@ -73,11 +68,15 @@ void setup(){
 
     
     // Initialize I2C
-    ESP_LOGI("MAIN", "I2C initialized successfully");
+    ESP_LOGI("MAIN", "----- Initializing I2C master -----");
     ESP_ERROR_CHECK(i2c_master_init());
 
+    // Initialize DAC
+    ESP_LOGI("MAIN", "----- Initializing DAC -----");
+    ESP_ERROR_CHECK(dac_setup());
+
     // Initialize encoder
-    ESP_LOGI("MAIN", "Encoder initialized successfully");
+    ESP_LOGI("MAIN", "----- Initializing encoder -----");
     ESP_ERROR_CHECK(encoder_init());
 }
 
