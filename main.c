@@ -1,4 +1,4 @@
-/* STD Libss */
+/* STD Libs */
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdio.h>
@@ -56,6 +56,31 @@ void app_main(void)
     }
 }
 
+void setup(){
+
+    // Configure the IOMUX register for pad HEARTBEAT_PIN
+    esp_rom_gpio_pad_select_gpio(HEARTBEAT_PIN);
+    /* Set the GPIO as a push/pull output */
+    gpio_set_direction(HEARTBEAT_PIN, GPIO_MODE_OUTPUT);
+
+    /* SET Analog switches on*/
+    gpio_set_direction(ANALOG_SW1_ENABLE, GPIO_MODE_OUTPUT);
+    gpio_set_direction(ANALOG_SW4_ENABLE, GPIO_MODE_OUTPUT);
+    gpio_set_direction(DUT_ENABLE, GPIO_MODE_OUTPUT);
+    gpio_set_level(ANALOG_SW1_ENABLE, 0);
+    gpio_set_level(ANALOG_SW4_ENABLE, 0);
+    gpio_set_level(DUT_ENABLE, 0);
+
+    
+    // Initialize I2C
+    ESP_LOGI("MAIN", "I2C initialized successfully");
+    ESP_ERROR_CHECK(i2c_master_init());
+
+    // Initialize encoder
+    ESP_LOGI("MAIN", "Encoder initialized successfully");
+    ESP_ERROR_CHECK(encoder_init());
+}
+
 void print_esp_info(){
 
     /* Print chip information */
@@ -83,31 +108,4 @@ void print_esp_info(){
 
     printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
 
-}
-
-void setup(){
-
-    esp_err_t err;
-
-    // Configure the IOMUX register for pad HEARTBEAT_PIN
-    esp_rom_gpio_pad_select_gpio(HEARTBEAT_PIN);
-    /* Set the GPIO as a push/pull output */
-    gpio_set_direction(HEARTBEAT_PIN, GPIO_MODE_OUTPUT);
-
-    /* SET Analog switches on*/
-    gpio_set_direction(ANALOG_SW1_ENABLE, GPIO_MODE_OUTPUT);
-    gpio_set_direction(ANALOG_SW4_ENABLE, GPIO_MODE_OUTPUT);
-    gpio_set_direction(DUT_ENABLE, GPIO_MODE_OUTPUT);
-    gpio_set_level(ANALOG_SW1_ENABLE, 0);
-    gpio_set_level(ANALOG_SW4_ENABLE, 0);
-    gpio_set_level(DUT_ENABLE, 0);
-
-    
-    // Initialize I2C
-    ESP_ERROR_CHECK(i2c_master_init());
-    ESP_LOGI("MAIN", "I2C initialized successfully");
-
-    // Initialize encoder
-    ESP_ERROR_CHECK(encoder_init());
-    ESP_LOGI("MAIN", "Encoder initialized successfully");
 }

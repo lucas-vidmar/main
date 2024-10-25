@@ -4,13 +4,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
-#include "driver/pcnt.h"
+#include "driver/pulse_cnt.h"
 #include <esp_log.h>
 
 #define ENCODER_SW GPIO_NUM_25
 #define ENCODER_CLK GPIO_NUM_32
 #define ENCODER_DT GPIO_NUM_33
-#define PULSE_FILTER 500
+#define PULSE_FILTER 10000
 #define DEBOUNCE_TIME 100
 
 /**
