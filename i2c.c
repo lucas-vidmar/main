@@ -32,7 +32,10 @@ esp_err_t i2c_master_add_device(uint8_t addr, i2c_master_dev_handle_t* dev_handl
 
 esp_err_t i2c_masterWrite(i2c_master_dev_handle_t dev_handle, uint8_t *data_wr, size_t size)
 {
-    ESP_LOGI("I2C", "Writing the following data to I2C device: %s", data_wr);
+    ESP_LOGI("I2C", "Writing the following data to I2C device:");
+    for (size_t i = 0; i < size; i++) {
+        ESP_LOGI("I2C", "0x%02X", data_wr[i]);
+    }
     return i2c_master_transmit(dev_handle, data_wr, size, I2C_TIMEOUT);
 }
 

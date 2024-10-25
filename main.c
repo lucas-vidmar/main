@@ -35,6 +35,10 @@ void app_main(void)
 
     setup();
 
+    // Write 10mV to DAC
+    ESP_LOGI("MAIN", "Setting DAC voltage to 10mV");
+    ESP_ERROR_CHECK(dac_set_voltage(10));
+
     while (1)
     {
         static int last_encoder_position = 0;
