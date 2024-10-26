@@ -18,7 +18,8 @@
 #define ENCODER_CLK GPIO_NUM_32
 #define ENCODER_DT GPIO_NUM_33
 #define PULSE_FILTER 10000
-#define DEBOUNCE_TIME 200 // ms
+#define DEBOUNCE_TIME 500 // ms
+#define ENCODER_COUNTER_LIMIT 20
 
 /**
  * @brief Initializes the encoder.
@@ -78,3 +79,12 @@ void encoder_decrement();
  * @return bool True if the switch is pressed, false otherwise.
  */
 bool encoder_getSwitchState();
+
+/**
+ * @brief Resets the state of the encoder switch.
+ *
+ * This function is used to reset the internal state of the encoder switch,
+ * typically to clear any previous state or to initialize it to a known state.
+ * It should be called whenever the encoder switch needs to be reset.
+ */
+void encoder_resetSwitchState();

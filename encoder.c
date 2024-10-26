@@ -28,8 +28,8 @@ esp_err_t encoder_init()
     /* PCNT setup */
     ESP_LOGI("Encoder", "Install pcnt unit");
     pcnt_unit_config_t unit_config = {
-        .high_limit = 5,
-        .low_limit = -5,
+        .high_limit = ENCODER_COUNTER_LIMIT + 1,
+        .low_limit = -1,
     };
     ESP_ERROR_CHECK(pcnt_new_unit(&unit_config, &pcnt_unit));
 
@@ -77,22 +77,37 @@ static void IRAM_ATTR encoder_itr_sw(void *arg)
     // Debounce the switch non blocking
     static uint32_t last_interrupt_time_sw = 0;
     uint32_t interrupt_time = xTaskGetTickCountFromISR();
-    if (interrupt_time - last_interrupt_time_sw < pdMS_TO_TICKS(DEBOUNCE_TIME))
-    { // debounce
-        return;
-    }
+    if (interrupt_time - last_interrupt_time_sw < pdMS_TO_TICKS(DEBOUNCE_TIME)) return; // Ignore the interrupt if it was too soon
     last_interrupt_time_sw = interrupt_time; // Update the last interrupt time
-    encoder_sw_state = !encoder_sw_state;    // Toggle the switch state
+
+    encoder_sw_state = true;    // Set the switch to pressed
 }
 
 int encoder_getPosition()
 {
-    // Get the current position of the encoder with pulse_cnt.h
-    pcnt_unit_get_count(pcnt_unit, &encoder_position);
-    return encoder_position;
+    
+    ESP_ERROR_CHECK(pcnt_unit_get_count(pcnt_unit, &encoder_position));
+    
+    
+    // Adjust reading to range
+    if (encoder_position > ENCODER_COUNTER_LIMIT)
+    {
+        encoder_position = ENCODER_COUNTER_LIMIT;
+    }
+    else if (encoder_position < 0)
+    {
+        encoder_position = 0;
+    }
+
+    return encoder_position / 2;
 }
 
 bool encoder_getSwitchState()
 {
     return encoder_sw_state;
+}
+
+void encoder_resetSwitchState()
+{
+    encoder_sw_state = false;
 }
