@@ -23,16 +23,18 @@
 void setup(void);
 void print_esp_info(void);
 void display_variables(void);
+void print_header(void);
 
 uint8_t value_in_mV = 0;
-uint16_t adc_value = 0;
+float idut_inA = 0;
+float temperature_inC = 0;
+float vdut_inV = 0;
 
 void app_main(void)
 {
-    printf("***************************\n* Electronic Load Project *\n***************************\n");
-    print_esp_info();
-    printf("***************************\n");
-    esp_log_level_set("*", ESP_LOG_DEBUG); // Set all components to log level VERBOSE
+    print_header();
+    
+    esp_log_level_set("*", ESP_LOG_WARN); // Set all components to log level VERBOSE
 
     setup();
     ESP_LOGI("MAIN", "----- Finished Configurations -----");
@@ -42,22 +44,27 @@ void app_main(void)
     ESP_ERROR_CHECK(dac_set_voltage(0));
 
     uint8_t last_value_in_mV = 0;
-    uint16_t last_adc_value = 0;
     bool last_switch_state = false;
+    float last_idut_inA = 0;
+    float last_temperture_inC = 0;
+    float last_vdut_inV = 0;
 
     while (1)
     {
         // Calculate and show DAC and ADC value in mV to set
-        value_in_mV = encoder_getPosition();
-        //ESP_ERROR_CHECK(adc_read(&adc_value));
-             
+        value_in_mV = encoder_getPosition();      
+        idut_inA = adc_read_iDUT();
+        temperature_inC = adc_read_temperature();
+        vdut_inV = adc_read_vDUT();
 
         // Display when some variable changes
-        if (last_value_in_mV != value_in_mV)
+        if (last_value_in_mV != value_in_mV || last_idut_inA != idut_inA || last_temperture_inC != temperature_inC || last_vdut_inV != vdut_inV)
         {
             display_variables();
             last_value_in_mV = value_in_mV;
-            last_adc_value = adc_value;
+            last_idut_inA = idut_inA;
+            last_temperture_inC = temperature_inC;
+            last_vdut_inV = vdut_inV;
             last_switch_state = encoder_getSwitchState();
         }
 
@@ -66,6 +73,7 @@ void app_main(void)
         {
             ESP_LOGI("MAIN", "Setting DAC voltage to %d mV", value_in_mV);
             ESP_ERROR_CHECK(dac_set_voltage(value_in_mV));
+            printf("DAC Voltage: %d mV SET!\n", value_in_mV);
             encoder_resetSwitchState();
         }
 
@@ -137,15 +145,48 @@ void print_esp_info(){
 
 }
 
-void display_variables(void){
 
+void display_variables(void)
+{
     // Clear the terminal
     printf("\e[1;1H\e[2J");
 
-    // Print the current voltage of the DAC
-    printf("DAC voltage: %d mV\n", value_in_mV);
+    // Print the header
+    print_header();
 
-    // Print the current voltage of the ADC
-    //adc_read(&adc_value);
-    printf("ADC value: %d\n", adc_value);
+    // Display the current DAC voltage
+    printf(" DAC Voltage          : %d mV\n", value_in_mV);
+
+    // Display the measured current
+    if (idut_inA >= 0.0) {
+        printf(" Measured DUT Current  : %.2f A\n", idut_inA);
+    } else {
+        printf(" Measured DUT Current  : Error measuring current\n");
+    }
+
+    // Display the measured temperature
+    if (temperature_inC >= -55.0 && temperature_inC <= 150.0) { // Typical range for LM35
+        printf(" Measured Temperature   : %.2f °C\n", temperature_inC);
+    } else {
+        printf(" Measured Temperature   : Error measuring temperature\n");
+    }
+
+    // Display the measured voltage
+    if (vdut_inV >= 0.0) {
+        printf(" Measured DUT Voltage   : %.2f V\n", vdut_inV);
+    } else {
+        printf(" Measured DUT Voltage   : Error measuring voltage\n");
+    }
+
+    // Add a footer or separator for clarity
+    printf("***************************\n");
+}
+
+void print_header(void)
+{
+    printf("***************************\n");
+    printf("      Electronic Load Project     \n");
+    printf("***************************\n");
+    print_esp_info();  // Assuming this function prints relevant ESP info
+    printf("***************************\n");
 }
