@@ -77,7 +77,7 @@ void app_main(void)
             encoder_resetSwitchState();
         }
 
-        vTaskDelay(10 / portTICK_PERIOD_MS); // feed the watchdog
+        vTaskDelay(2000 / portTICK_PERIOD_MS); // feed the watchdog
         
     }
 }
