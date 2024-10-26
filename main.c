@@ -122,7 +122,7 @@ void print_esp_info(){
     esp_chip_info_t chip_info;
     uint32_t flash_size;
     esp_chip_info(&chip_info);
-    printf("This is %s chip with %d CPU core(s), %s%s%s%s, ",
+    printf("This is %s chip with %d CPU core(s), %s%s%s%s\n",
            CONFIG_IDF_TARGET,
            chip_info.cores,
            (chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "WiFi/" : "",
@@ -132,7 +132,7 @@ void print_esp_info(){
 
     unsigned major_rev = chip_info.revision / 100;
     unsigned minor_rev = chip_info.revision % 100;
-    printf("silicon revision v%d.%d, ", major_rev, minor_rev);
+    printf("Silicon revision v%d.%d, ", major_rev, minor_rev);
     if(esp_flash_get_size(NULL, &flash_size) != ESP_OK) {
         printf("Get flash size failed");
         return;
@@ -145,7 +145,6 @@ void print_esp_info(){
 
 }
 
-
 void display_variables(void)
 {
     // Clear the terminal
@@ -154,39 +153,45 @@ void display_variables(void)
     // Print the header
     print_header();
 
+    // Print the table header
+    printf("╔══════════════════════════════════════════════════╗\n");
+    printf("║                 Measurement Table                ║\n");
+    printf("╠══════════════════════════════════════════════════╣\n");
+    printf("║ Variable                 │ Value                 ║\n");
+    printf("╠══════════════════════════════════════════════════╣\n");
+
     // Display the current DAC voltage
-    printf(" DAC Voltage          : %d mV\n", value_in_mV);
+    printf("║ DAC Voltage              │ %d mV                  ║\n", value_in_mV);
 
     // Display the measured current
     if (idut_inA >= 0.0) {
-        printf(" Measured DUT Current  : %.2f A\n", idut_inA);
+        printf("║ Measured DUT Current     │ %.2f A                ║\n", idut_inA);
     } else {
-        printf(" Measured DUT Current  : Error measuring current\n");
+        printf("║ Measured DUT Current     │ Error measuring current║\n");
     }
 
     // Display the measured temperature
     if (temperature_inC >= -55.0 && temperature_inC <= 150.0) { // Typical range for LM35
-        printf(" Measured Temperature   : %.2f °C\n", temperature_inC);
+        printf("║ Measured Temperature     │ %.2f °C              ║\n", temperature_inC);
     } else {
-        printf(" Measured Temperature   : Error measuring temperature\n");
+        printf("║ Measured Temperature      │ Error measuring temperature║\n");
     }
 
     // Display the measured voltage
     if (vdut_inV >= 0.0) {
-        printf(" Measured DUT Voltage   : %.2f V\n", vdut_inV);
+        printf("║ Measured DUT Voltage     │ %.2f V                ║\n", vdut_inV);
     } else {
-        printf(" Measured DUT Voltage   : Error measuring voltage\n");
+        printf("║ Measured DUT Voltage      │ Error measuring voltage║\n");
     }
 
-    // Add a footer or separator for clarity
-    printf("***************************\n");
+    // Print the table footer
+    printf("╚══════════════════════════════════════════════════╝\n");
 }
 
 void print_header(void)
 {
-    printf("***************************\n");
-    printf("      Electronic Load Project     \n");
-    printf("***************************\n");
-    print_esp_info();  // Assuming this function prints relevant ESP info
-    printf("***************************\n");
+    printf("╔══════════════════════════════════════════════════╗\n");
+    printf("║             Electronic Load Project              ║\n");
+    printf("╚══════════════════════════════════════════════════╝\n");
+    print_esp_info();
 }
