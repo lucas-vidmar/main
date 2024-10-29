@@ -8,11 +8,10 @@
 #include "esp_lcd_panel_vendor.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_timer.h"
-#include "esp_lcd_panel_io.h"
-#include "esp_lcd_panel_vendor.h"
-#include "esp_lcd_panel_ops.h"
 #include "lvgl.h"
-#include "lvgl_helpers.h"
+#include "driver/gpio.h"
+
+//#include "lvgl_helpers.h"
 
 /* Tamaño de la pantalla */
 #define SCREEN_WIDTH  240

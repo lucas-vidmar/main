@@ -24,7 +24,6 @@ void lcd_init(void)
         .lcd_param_bits = 8,
         .spi_mode = 0,
         .trans_queue_depth = 10,
-        .spi_host_id = SPI2_HOST,
     };
     esp_lcd_panel_io_handle_t io_handle = NULL;
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)SPI2_HOST, &io_config, &io_handle));
@@ -56,9 +55,9 @@ void lcd_display_values(uint8_t dac_voltage, float current, float temperature, f
     char buffer[64];
 
     // Limpiar la pantalla
-    esp_lcd_panel_disp_off(panel_handle, false);
+    esp_lcd_panel_disp_on_off(panel_handle, false);
     esp_lcd_panel_draw_bitmap(panel_handle, 0, 0, 320, 240, NULL); // Limpia la pantalla (puede variar según la implementación)
-    esp_lcd_panel_disp_off(panel_handle, true);
+    esp_lcd_panel_disp_on_off(panel_handle, true);
 
     // Establecer posición y color del texto
     uint16_t x = 10;
@@ -67,20 +66,20 @@ void lcd_display_values(uint8_t dac_voltage, float current, float temperature, f
 
     // Mostrar el voltaje del DAC
     snprintf(buffer, sizeof(buffer), "DAC Voltage: %d mV", dac_voltage);
-    esp_lcd_panel_draw_string(panel_handle, x, y, buffer, color);
+    esp_lcd_panel_draw_bitmap(panel_handle, x, y, x + 100, y + 20, buffer);
     y += 30;
 
     // Mostrar la corriente
     snprintf(buffer, sizeof(buffer), "Current: %.2f A", current);
-    esp_lcd_panel_draw_string(panel_handle, x, y, buffer, color);
+    esp_lcd_panel_draw_bitmap(panel_handle, x, y, x + 100, y + 20, buffer);
     y += 30;
 
     // Mostrar la temperatura
     snprintf(buffer, sizeof(buffer), "Temperature: %.2f C", temperature);
-    esp_lcd_panel_draw_string(panel_handle, x, y, buffer, color);
+    esp_lcd_panel_draw_bitmap(panel_handle, x, y, x + 100, y + 20, buffer);
     y += 30;
 
     // Mostrar la tensión medida
     snprintf(buffer, sizeof(buffer), "Voltage: %.2f V", measured_voltage);
-    esp_lcd_panel_draw_string(panel_handle, x, y, buffer, color);
+    esp_lcd_panel_draw_bitmap(panel_handle, x, y, x + 100, y + 20, buffer);
 }
